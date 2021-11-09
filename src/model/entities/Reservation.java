@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reservation {
 
 	private Date checkIn;
@@ -15,8 +17,10 @@ public class Reservation {
 	public Reservation() {
 	}
 
-	public Reservation(Date checkIn, Date checkOut, int roomNumber) {
-		super();
+	public Reservation(Date checkIn, Date checkOut, int roomNumber)  {
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("checkout date must be after checkin date");
+		}
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
 		this.roomNumber = roomNumber;
@@ -45,22 +49,21 @@ public class Reservation {
 
 	}
 
-	public String updateDates(Date checkIn, Date checkOut) {
+	public void updateDates(Date checkIn, Date checkOut)  {
 		Date now = new Date();
 		if (checkIn.before(now) || checkOut.before(now)) {
-			return "Reservation dates for update must be futures dates";
-		} 
+			throw new DomainException("Reservation dates for update must be futures dates");
+		}
 		if (!checkOut.after(checkIn)) {
-			return "checkout date must be after checkin date";
+			throw new DomainException("checkout date must be after checkin date");
 		}
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		return null;
 	}
 
 	public String toString() {
-		return "Room " + roomNumber + ", CheckIn " + sdf.format(checkIn) + ", CheckOut " + sdf.format(checkOut)+
-				", Duration: "+duration()+" nights";
+		return "Room " + roomNumber + ", CheckIn " + sdf.format(checkIn) + ", CheckOut " + sdf.format(checkOut)
+				+ ", Duration: " + duration() + " nights";
 
 	}
 }
